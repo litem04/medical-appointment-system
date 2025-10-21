@@ -1,9 +1,9 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/auth_db
+    url: jdbc:postgresql://localhost:5434/patient_db
     username: user
     password: pass
     driver-class-name: org.postgresql.Driver
@@ -14,6 +14,3 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-jwt:
-  secret: authservice@key
-  expiration: 3600000

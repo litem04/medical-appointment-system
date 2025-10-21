@@ -1,9 +1,9 @@
 server:
-  port: 8081
+  port: 8086
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/auth_db
+    url: jdbc:postgresql://localhost:5436/appointment_db
     username: user
     password: pass
     driver-class-name: org.postgresql.Driver
@@ -14,6 +14,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-jwt:
-  secret: authservice@key
-  expiration: 3600000
+
+# URLs của các service khác
+doctor:
+  service:
+    url: http://doctor-service:8083
+
+patient:
+  service:
+    url: http://patient-service:8082

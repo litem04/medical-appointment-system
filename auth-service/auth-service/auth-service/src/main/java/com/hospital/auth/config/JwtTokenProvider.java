@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.Claims;
 
 @Component
@@ -15,6 +16,10 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+	@PostConstruct
+	public void init() {
+	    System.out.println("JWT SECRET = " +jwtSecret);
+	}
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 

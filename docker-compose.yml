@@ -1,56 +1,97 @@
 version: '3.9'
 
 services:
-
-
-
-  patient-db:
-    image: postgres:15
-    container_name: patient-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: patient_db
-    ports:
-      - "5434:5432"
-    volumes:
-      - ./patient-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-  doctor-db:
-    image: postgres:15
-    container_name: doctor-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: doctor_db
-    ports:
-      - "5435:5432"
-    volumes:
-      - ./doctor-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-  appointment-db:
-    image: postgres:15
-    container_name: appointment-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: appointment_db
-    ports:
-      - "5436:5432"
-    volumes:
-      - ./appointment-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
+  # ===================== AUTH DATABASE =====================
   auth-db:
     image: postgres:15
     container_name: auth-db
+    restart: always
     environment:
       POSTGRES_DB: auth_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       TZ: Asia/Ho_Chi_Minh
-    PGTZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
     ports:
       - "5433:5432"
     volumes:
-      - ./auth-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-	- ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - auth_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===================== PATIENT DATABASE =====================
+  patient-db:
+    image: postgres:15
+    container_name: patient-db
+    restart: always
+    environment:
+      POSTGRES_DB: patient_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      TZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5434:5432"
+    volumes:
+      - patient_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d patient_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===================== DOCTOR DATABASE =====================
+  doctor-db:
+    image: postgres:15
+    container_name: doctor-db
+    restart: always
+    environment:
+      POSTGRES_DB: doctor_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      TZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5435:5432"
+    volumes:
+      - doctor_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d doctor_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===================== APPOINTMENT DATABASE =====================
+  appointment-db:
+    image: postgres:15
+    container_name: appointment-db
+    restart: always
+    environment:
+      POSTGRES_DB: appointment_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      TZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5436:5432"
+    volumes:
+      - appointment_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d appointment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ===================== NETWORK & VOLUMES =====================
+networks:
+  default:
+    name: hospital-network
+
+volumes:
+  auth_data:
+  patient_data:
+  doctor_data:
+  appointment_data:
