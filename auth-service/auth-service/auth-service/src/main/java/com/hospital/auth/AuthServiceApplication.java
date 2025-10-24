@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import jakarta.annotation.PostConstruct;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.hospital.auth", "com.hospital.config"})
+
+
 public class AuthServiceApplication {
 	   @PostConstruct
 	    public void init() {

@@ -1,7 +1,7 @@
 package com.hospital.doctor.dto;
 
 public class DoctorRequest {
-	 private String fullName;
+		private String fullName;
 	    private String specialization;
 	    private String phone;
 	    private String email;

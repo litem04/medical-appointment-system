@@ -32,9 +32,9 @@ public class AppointmentService {
     // 🩺 Tạo lịch hẹn mới
     public AppointmentResponse create(AppointmentCreateRequest req) {
      //   LocalDateTime startTime = req.getAppointmentTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // Hoặc định dạng phù hợp với input
-        LocalDateTime startTime = LocalDateTime.parse(req.getAppointmentTime(), formatter);
-        
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    	LocalDateTime startTime = LocalDateTime.parse(req.getAppointmentTime(), formatter);
+
         Appointment appointment = new Appointment();
         appointment.setDoctorId(req.getDoctorId());
         appointment.setPatientId(req.getPatientId());

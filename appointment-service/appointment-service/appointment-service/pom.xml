@@ -65,6 +65,11 @@
 	    <artifactId>spring-boot-starter-webflux</artifactId>
 	</dependency>
 
+			<dependency>
+				<groupId>com.hospital</groupId>
+				<artifactId>auth-service</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
 	</dependencies>
 
 	<build>
