@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch hẹn của tôi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+    <div class="container">
+        <h2 class="mb-4">Lịch hẹn của tôi</h2>
+        <div id="appointments-list" class="mt-3">
+            <p class="text-muted">Đang tải lịch hẹn...</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. HÀM GIẢI MÃ JWT
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(
+                    atob(base64).split('').map(c => {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join('')
+                );
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error("Lỗi giải mã token:", e);
+                return null;
+            }
+        }
+
+        // 2. HÀM HIỂN THỊ LỖI
+        function showError(msg) {
+            const el = document.getElementById('appointments-list');
+            if (el) {
+                el.innerHTML = `<p class="text-danger text-center">${msg}</p>`;
+            }
+        }
+
+        // 3. HÀM HIỂN THỊ LỊCH HẸN
+        function renderAppointments(appointments) {
+            const container = document.getElementById('appointments-list');
+            if (!container) return;
+
+            if (!appointments || appointments.length === 0) {
+                container.innerHTML = '<p class="text-muted">Bạn chưa có lịch hẹn nào.</p>';
+                return;
+            }
+
+            let html = '<div class="list-group">';
+            appointments.forEach(appt => {
+                const date = new Date(appt.appointmentTime).toLocaleString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                html += `
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Bác sĩ ID: <strong>${appt.doctorId}</strong></h6>
+                            <small class="text-muted">${date}</small>
+                        </div>
+                        <p class="mb-1">
+                            Ghi chú: <em>${appt.note || 'Không có'}</em><br>
+                            Thời lượng: <strong>${appt.durationMinutes} phút</strong>
+                        </p>
+                    </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 4. HÀM CHÍNH: TẢI LỊCH HẸN
+        async function loadMyAppointments() {
+            console.log("BẮT ĐẦU KIỂM TRA TOKEN...");
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showError("Vui lòng <a href='login.html'>đăng nhập</a> để xem lịch hẹn.");
+                return;
+            }
+
+            const payload = parseJwt(token);
+            if (!payload) {
+                showError("Token không hợp lệ. Vui lòng đăng nhập lại.");
+                return;
+            }
+
+            const patientId = payload.patientId || payload.sub || payload.id;
+            console.log("patientId từ token:", patientId);
+
+            if (!patientId) {
+                showError("Không tìm thấy ID bệnh nhân trong token!");
+                return;
+            }
+
+            const API_URL = `http://localhost:8080/api/v1/appointments/my?patientId=${patientId}`;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error("Lỗi server:", response.status, text);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const appointments = await response.json();
+                renderAppointments(appointments);
+
+            } catch (err) {
+                console.error("Lỗi kết nối:", err);
+                showError("Không kết nối được server. Backend có đang chạy ở <code>localhost:8080</code> không?");
+            }
+        }
+
+        // GỌI HÀM SAU KHI DOM SẴN SÀNG
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM đã sẵn sàng, gọi loadMyAppointments sau 500ms...");
+            setTimeout(loadMyAppointments, 500);
+        });
+    </script>
+</body>
+</html>

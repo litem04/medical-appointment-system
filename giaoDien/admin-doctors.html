@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quản lý bác sĩ</title>
+  <link href="assets/css/style.css" rel="stylesheet" />
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <div class="container mx-auto p-6 max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h1 class="text-3xl font-bold text-center text-blue-800 mb-8 flex items-center justify-center gap-2">
+        Quản lý bác sĩ
+      </h1>
+
+      <!-- Form thêm bác sĩ -->
+      <form id="doctorForm" class="space-y-6 mb-10">
+        <div class="grid md:grid-cols-2 gap-6">
+          <input type="text" id="fullName" placeholder="Họ tên" class="form-control" required />
+          <input type="text" id="specialization" placeholder="Chuyên khoa" class="form-control" required />
+          <input type="text" id="phone" placeholder="Số điện thoại" class="form-control" />
+          <input type="email" id="email" placeholder="Email" class="form-control" />
+        </div>
+        <button type="submit" class="btn-primary w-full">Thêm bác sĩ</button>
+      </form>
+
+      <!-- Danh sách bác sĩ -->
+      <div id="doctorsList" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/appointment.js"></script>
+  <script>
+    // Load danh sách
+    async function loadDoctors() {
+      const doctors = await apiFetch('/doctors');
+      const list = document.getElementById('doctorsList');
+      list.innerHTML = doctors.map(d => `
+        <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center">
+          <div>
+            <p class="font-semibold">${d.fullName}</p>
+            <p class="text-sm text-blue-600">${d.specialization}</p>
+          </div>
+          <span class="text-green-600 text-sm">Hoạt động</span>
+        </div>
+      `).join('');
+    }
+
+    // Thêm bác sĩ
+    document.getElementById('doctorForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const data = {
+        fullName: document.getElementById('fullName').value,
+        specialization: document.getElementById('specialization').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        active: true
+      };
+      await apiFetch('/doctors', { method: 'POST', body: JSON.stringify(data) });
+      toast('Thêm bác sĩ thành công!', 'success');
+      e.target.reset();
+      loadDoctors();
+    };
+
+    // Load khi mở trang
+    loadDoctors();
+  </script>
+</body>
+</html> 

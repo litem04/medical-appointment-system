@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt lịch khám</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+<div class="container">
+    <h2>Đặt lịch khám bệnh</h2>
+    <form id="appointmentForm">
+        <div class="mb-3">
+            <label class="form-label">Bác sĩ</label>
+            <select class="form-select" id="doctorId" required>
+                <option value="">Chọn bác sĩ</option>
+                <option value="1">BS. Nguyễn Văn A</option>
+                <option value="2">BS. Trần Thị B</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ngày giờ</label>
+            <input type="datetime-local" class="form-control" id="appointmentTime" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Thời lượng (phút)</label>
+            <input type="number" class="form-control" id="durationMinutes" value="30" min="15" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ghi chú</label>
+            <textarea class="form-control" id="note" rows="3" placeholder="Triệu chứng, yêu cầu..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Đặt lịch</button>
+    </form>
+</div>
+
+<script src="book-appointment.js"></script>
+</body>
+</html>
