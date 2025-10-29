@@ -2,79 +2,91 @@ package com.hospital.doctor.service;
 
 import com.hospital.doctor.dto.*;
 import com.hospital.doctor.model.Doctor;
+import com.hospital.doctor.repository.DoctorReponsitory;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import com.hospital.doctor.repository.DoctorReponsitory;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
 @Service
 public class DoctorService {
+
 	 private final DoctorReponsitory repo;
 
-	    public DoctorService(DoctorReponsitory repo) {
-	        this.repo = repo;
-	    }
+    public DoctorService(DoctorReponsitory repo) {
+        this.repo = repo;
+    }
 
-	    public DoctorResponse createDoctor(DoctorRequest req) {
-	        if (req.getFullName() == null || req.getSpecialization() == null) {
-	            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tên và chuyên khoa bắt buộc");
-	        }
+    public DoctorResponse createDoctor(DoctorRequest req) {
+        if (req.getFullName() == null || req.getFullName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tên bác sĩ là bắt buộc");
+        }
 
-	        Doctor doctor = new Doctor();
-	        doctor.setFullName(req.getFullName());
-	        doctor.setSpecialization(req.getSpecialization());
-	        doctor.setPhone(req.getPhone());
-	        doctor.setEmail(req.getEmail());
-	        doctor.setActive(true);
+        if (req.getSpecialization() == null || req.getSpecialization().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chuyên khoa là bắt buộc");
+        }
 
-	        Doctor saved = repo.save(doctor);
-	        return toResponse(saved);
-	    }
+        Doctor doctor = new Doctor();
+  
+        doctor.setFullName(req.getFullName());
+        doctor.setSpecialization(req.getSpecialization());
+        doctor.setPhone(req.getPhone());
+        doctor.setEmail(req.getEmail());
+        doctor.setImageUrl(req.getImageUrl());
+        doctor.setActive(true);
 
-	    public DoctorResponse getDoctorById(Long id) {
-	        Doctor doctor = repo.findById(id)
-	                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
-	        return toResponse(doctor);
-	    }
+        Doctor saved = repo.save(doctor);
+        return toResponse(saved);
+    }
 
-	    public List<DoctorResponse> getAllDoctors() {
-	        return repo.findAll()
-	                .stream()
-	                .map(this::toResponse)
-	                .collect(Collectors.toList());
-	    }
+    public DoctorResponse getDoctorById(Long id) {
+        Doctor doctor = repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
+        return toResponse(doctor);
+    }
 
-	    public DoctorResponse updateDoctor(Long id, DoctorRequest req) {
-	        Doctor doctor = repo.findById(id)
-	                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
+    public List<DoctorResponse> getAllDoctors() {
+        return repo.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
 
-	        if (req.getFullName() != null) doctor.setFullName(req.getFullName());
-	        if (req.getSpecialization() != null) doctor.setSpecialization(req.getSpecialization());
-	        if (req.getPhone() != null) doctor.setPhone(req.getPhone());
-	        if (req.getEmail() != null) doctor.setEmail(req.getEmail());
+    public DoctorResponse updateDoctor(Long id, DoctorRequest req) {
+        Doctor doctor = repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
 
-	        Doctor updated = repo.save(doctor);
-	        return toResponse(updated);
-	    }
+        if (req.getFullName() != null) doctor.setFullName(req.getFullName());
+        if (req.getSpecialization() != null) doctor.setSpecialization(req.getSpecialization());
+        if (req.getPhone() != null) doctor.setPhone(req.getPhone());
+        if (req.getEmail() != null) doctor.setEmail(req.getEmail());
+        if (req.getImageUrl() != null) doctor.setImageUrl(req.getImageUrl());
 
-	    public void deactivateDoctor(Long id) {
-	        Doctor doctor = repo.findById(id)
-	                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
-	        doctor.setActive(false);
-	        repo.save(doctor);
-	    }
+        Doctor updated = repo.save(doctor);
+        return toResponse(updated);
+    }
 
-	    private DoctorResponse toResponse(Doctor d) {
-	        DoctorResponse r = new DoctorResponse();
-	        r.setId(d.getId());
-	        r.setFullName(d.getFullName());
-	        r.setSpecialization(d.getSpecialization());
-	        r.setPhone(d.getPhone());
-	        r.setEmail(d.getEmail());
-	        r.setActive(d.getActive());
-	        return r;
-	    }
+    public void deactivateDoctor(Long id) {
+        Doctor doctor = repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy bác sĩ"));
+        doctor.setActive(false);
+        repo.save(doctor);
+    }
+
+    private DoctorResponse toResponse(Doctor d) {
+        DoctorResponse r = new DoctorResponse();
+        
+        r.setId(d.getId());
+        r.setFullName(d.getFullName());
+        r.setSpecialization(d.getSpecialization());
+        r.setPhone(d.getPhone());
+        r.setEmail(d.getEmail());
+        r.setImageUrl(d.getImageUrl());
+        r.setActive(d.getActive());
+        return r;
+    }
 }

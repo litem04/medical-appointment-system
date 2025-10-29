@@ -11,17 +11,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()   // ⚡ Cho phép tất cả request (tạm thời)
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
-
-        return http.build();
-    }
+	 @Bean
+	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	        http
+	            .csrf(csrf -> csrf.disable()) // Tắt CSRF cho phép upload form
+	            .authorizeHttpRequests(auth -> auth
+	                .requestMatchers("/api/v1/doctors/upload").permitAll() // ✅ Cho phép public
+	                .requestMatchers("/api/v1/doctors/**").permitAll() // ✅ Cho phép tất cả endpoint doctor
+	                .anyRequest().permitAll()
+	            )
+	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+	        return http.build();
+	    }
 }

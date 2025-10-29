@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    List<Appointment> findByDoctorIdOrderByAppointmentTimeDesc(Long doctorId);
+	
 
     List<Appointment> findByPatientIdOrderByAppointmentTimeDesc(Long patientId);
 

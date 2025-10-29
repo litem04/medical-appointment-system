@@ -21,5 +21,5 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 jwt:
-  secret: authservice@key
-  expiration: 3600000
+  secret: "my-super-secret-jwt-key-for-hospital-2025"  # 40 ký tự → 320 bit → OK
+  expiration: 86400000

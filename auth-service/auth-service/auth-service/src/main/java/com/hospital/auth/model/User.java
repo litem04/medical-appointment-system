@@ -1,4 +1,3 @@
-
 package com.hospital.auth.model;
 
 import jakarta.persistence.*;
@@ -11,14 +10,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false)
     private String passwordHash;
 
-    private String role;
-
-    // ====== Getter và Setter ======
+    // Getters & Setters
     public Long getId() {
         return id;
     }
@@ -41,13 +39,5 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }
